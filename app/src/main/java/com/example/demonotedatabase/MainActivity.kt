@@ -18,14 +18,14 @@ class MainActivity : AppCompatActivity() {
         mUserViewModel.deleteAllUsers()
         var list: List<Notes>? = mUserViewModel.readAllData.value
         val label = Label(1,"nooo")
-        val note = Notes("chera","nothing", NOTES, listOf(label))
+        val note = Notes("chera","nothing", NOTES, setOf(label,label))
         mUserViewModel.addUser(note)
         note.noteDetails = "something"
         mUserViewModel.updateUser(note)
-        val note2 = Notes("dev","xxx",NOTES, listOf(label))
+        val note2 = Notes("dev","xxx",NOTES, setOf(label))
         note2.pinned = PINNED
         mUserViewModel.addUser(note2)
-        val note3 = Notes("cherry","mmm", NOTES, listOf(label))
+        val note3 = Notes("cherry","mmm", NOTES, setOf(label))
         note3.pinned = PINNED
         //note3.labels.add(label)
         //not working
