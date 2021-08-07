@@ -15,10 +15,11 @@ import com.google.android.material.chip.ChipGroup
 class NoteAdapter  ()
     : RecyclerView.Adapter<NoteAdapter.SummaNoteCardViewHolder>() {
 
+    private lateinit var context: Context
     private var notesList = mutableListOf<Notes>()
     fun setNotes(list:List<Notes>){
-        notesList.clear()
-        notesList.addAll(list)
+        notesList = list as MutableList<Notes>
+        notifyDataSetChanged()
     }
     inner class SummaNoteCardViewHolder(view: View): RecyclerView.ViewHolder(view){
         val itemTitle: TextView = view.findViewById(R.id.item_title)
@@ -30,6 +31,7 @@ class NoteAdapter  ()
         val itemPinned: TextView = view.findViewById(R.id.item_pinned)
 
         init {
+            context = view.context
             view.setOnClickListener {
                 Toast.makeText(view.context,"summa", Toast.LENGTH_LONG).show()
             }
@@ -59,11 +61,12 @@ class NoteAdapter  ()
         if(data.pinned == PINNED){
             holder.itemPinned.text = "Pinned"
         }
-        /*val labels = data.labels
+        val labels = data.labels
         if (labels.isNotEmpty()) {
+            Toast.makeText(context,"labels rec",Toast.LENGTH_LONG).show()
             for (i in labels) {
                 holder.chipGroup.addChip(holder.chipGroup.context,i.labelName)
             }
-        }*/
+        }
     }
 }

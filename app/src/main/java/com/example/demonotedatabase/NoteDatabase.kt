@@ -11,50 +11,30 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.demonotedatabase.Notes.Companion.ARCHIVED
 import com.example.demonotedatabase.Notes.Companion.NOTES
 
-@Database(entities = [Notes::class], version = 1, exportSchema = false)
-//@TypeConverters(LabelTypeConverter::class)
+@Database(entities = [Notes::class], version = 1,exportSchema = false)
+@TypeConverters(LabelTypeConverter::class)
 abstract class NoteDatabase : RoomDatabase() {
 
     abstract fun noteDao(): NoteDao
 
     companion object {
-        private var instance: NoteDatabase? = null
+        @Volatile
+        private var INSTANCE: NoteDatabase? = null
 
-        fun getInstance(context: Context): NoteDatabase? {
-            if (instance == null) {
-                synchronized(NoteDatabase::class) {
-                    instance = Room.databaseBuilder(
-                        context.applicationContext,
-                        NoteDatabase::class.java, "note_database"
-                    )
-                        .fallbackToDestructiveMigration() // when version increments, it migrates (deletes db and creates new) - else it crashes
-                        .addCallback(roomCallback)
-                        .build()
-                }
+        fun getDatabase(context: Context): NoteDatabase{
+            val tempInstance = INSTANCE
+            if(tempInstance != null){
+                return tempInstance
             }
-            return instance
-        }
-
-        fun destroyInstance() {
-            instance = null
-        }
-
-        private val roomCallback = object : RoomDatabase.Callback() {
-            override fun onCreate(db: SupportSQLiteDatabase) {
-                super.onCreate(db)
-                PopulateDbAsyncTask(instance).execute()
+            synchronized(this){
+                val instance = Room.databaseBuilder(
+                    context.applicationContext,
+                    NoteDatabase::class.java,
+                    "note_database"
+                ).build()
+                INSTANCE = instance
+                return instance
             }
         }
     }
-
-    class PopulateDbAsyncTask(db: NoteDatabase?) : AsyncTask<Unit, Unit, Unit>() {
-        private val noteDao = db?.noteDao()
-
-        override fun doInBackground(vararg p0: Unit?) {
-            noteDao?.insert(Notes("title 1", "description 1", 1))
-            noteDao?.insert(Notes("title 2", "description 2", 2))
-            noteDao?.insert(Notes("title 3", "description 3", 3))
-        }
-    }
-
 }

@@ -15,17 +15,17 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         val mUserViewModel = ViewModelProvider(this).get(NoteViewModel::class.java)
-        mUserViewModel.deleteAllNotes()
-        var list: List<Notes>? = mUserViewModel.getAllNotes().value
+        mUserViewModel.deleteAllUsers()
+        var list: List<Notes>? = mUserViewModel.readAllData.value
         val label = Label(1,"nooo")
-        val note = Notes("chera","nothing", NOTES)
-        mUserViewModel.insert(note)
+        val note = Notes("chera","nothing", NOTES, listOf(label))
+        mUserViewModel.addUser(note)
         note.noteDetails = "something"
-        mUserViewModel.update(note)
-        val note2 = Notes("dev","xxx",NOTES)
+        mUserViewModel.updateUser(note)
+        val note2 = Notes("dev","xxx",NOTES, listOf(label))
         note2.pinned = PINNED
-        mUserViewModel.insert(note2)
-        val note3 = Notes("cherry","mmm", NOTES)
+        mUserViewModel.addUser(note2)
+        val note3 = Notes("cherry","mmm", NOTES, listOf(label))
         note3.pinned = PINNED
         //note3.labels.add(label)
         //not working
@@ -38,7 +38,7 @@ class MainActivity : AppCompatActivity() {
         mUserViewModel.delete(note2)*/
 
         val adapter2 = NoteAdapter()
-        mUserViewModel.getAllNotes().observe(this, {
+        mUserViewModel.readAllData.observe(this, {
             list = it
             adapter2.setNotes(it)
         })

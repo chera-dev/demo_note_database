@@ -3,28 +3,44 @@ package com.example.demonotedatabase
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class NoteViewModel(application: Application) : AndroidViewModel(application) {
-    private var repository: NoteRepository = NoteRepository(application)
-    private var allNotes: LiveData<List<Notes>> = repository.getAllNotes()
+    val readAllData: LiveData<List<Notes>>
+    private val repository: NoteRepository
 
-    fun insert(note: Notes) {
-        repository.insert(note)
+    init {
+        val userDao = NoteDatabase.getDatabase(
+            application
+        ).noteDao()
+        repository = NoteRepository(userDao)
+        readAllData = repository.readAllNotes
     }
 
-    fun update(note: Notes) {
-        repository.update(note)
+    fun addUser(note:Notes){
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.addNote(note)
+        }
     }
 
-    fun delete(note: Notes) {
-        repository.delete(note)
+    fun updateUser(note:Notes){
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.updateNote(note)
+        }
     }
 
-    fun deleteAllNotes() {
-        repository.deleteAllNotes()
+    fun deleteUser(note:Notes){
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.deleteNote(note)
+        }
     }
 
-    fun getAllNotes(): LiveData<List<Notes>> {
-        return allNotes
+    fun deleteAllUsers(){
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.deleteAllNotes()
+        }
     }
+
 }

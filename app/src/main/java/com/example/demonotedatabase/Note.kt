@@ -10,7 +10,7 @@ import com.google.gson.Gson
 data class Notes(@ColumnInfo(name = "note_title") var noteTitle:String,
                  @ColumnInfo(name = "note_details") var noteDetails:String,
                  @ColumnInfo(name = "note_type") var noteType: Int,
-                 //@ColumnInfo(name = "labels") val labels: List<Label>
+                 @ColumnInfo(name = "labels") var labels: List<Label>
                  ){
 
     @PrimaryKey(autoGenerate = true)
@@ -49,7 +49,7 @@ data class Label(val labelId:Int,var labelName:String)
 class LabelTypeConverter {
 
     @TypeConverter
-    fun listToJson(value: List<Label>?) = Gson().toJson(value)
+    fun listToJson(value: List<Label>?): String = Gson().toJson(value)
 
     @TypeConverter
     fun jsonToList(value: String) = Gson().fromJson(value, Array<Label>::class.java).toList()
