@@ -11,11 +11,14 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.demonotedatabase.Notes.Companion.ARCHIVED
 import com.example.demonotedatabase.Notes.Companion.NOTES
 
-@Database(entities = [Notes::class], version = 1,exportSchema = false)
-@TypeConverters(LabelTypeConverter::class)
+@Database(entities = [Notes::class, Label::class], version = 1,exportSchema = false)
+@TypeConverters(LabelTypeConverter::class,NoteTypeConverter::class)
+
 abstract class NoteDatabase : RoomDatabase() {
 
     abstract fun noteDao(): NoteDao
+
+    abstract fun labelDao(): LabelDao
 
     companion object {
         @Volatile

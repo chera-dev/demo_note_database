@@ -61,11 +61,14 @@ class NoteAdapter  ()
         if(data.pinned == PINNED){
             holder.itemPinned.text = "Pinned"
         }
-        val labels = data.labels
+        holder.itemDate.text = data.dateCreated
+        holder.itemTime.text = data.timeCreated
+
+        val labels = data.getLabels()
         if (labels.isNotEmpty()) {
             Toast.makeText(context,"labels rec",Toast.LENGTH_LONG).show()
             for (i in labels) {
-                holder.chipGroup.addChip(holder.chipGroup.context,i.labelName)
+                holder.chipGroup.addChip(holder.chipGroup.context,i)
             }
         }
     }

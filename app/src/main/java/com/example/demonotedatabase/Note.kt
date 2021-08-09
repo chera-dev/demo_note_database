@@ -1,39 +1,41 @@
 package com.example.demonotedatabase
 
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.PrimaryKey
-import androidx.room.TypeConverter
+import androidx.room.*
 import com.google.gson.Gson
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 
 @Entity(tableName = "note_table")
 data class Notes(@ColumnInfo(name = "note_title") var noteTitle:String,
                  @ColumnInfo(name = "note_details") var noteDetails:String,
                  @ColumnInfo(name = "note_type") var noteType: Int,
-                 @ColumnInfo(name = "labels") var labels: Set<Label>
-                 ){
+                 @ColumnInfo(name = "labels") private val labels:MutableSet<String> = mutableSetOf()){
 
     @PrimaryKey(autoGenerate = true)
-    var noteId: Int = 0
+    @ColumnInfo(name = "note_id")
+    var noteId: Long = 0
 
     @ColumnInfo(name = "note_pinned")
     var pinned:Int = UNPINNED
 
+    fun addLabel(labelName:String){
+        labels.add(labelName)
+    }
 
-/*
-    val timeCreated: String
-        get() = getCurrentTimeAndDate().first
+    fun getLabels():Set<String>{
+        return labels
+    }
 
-    val dateCreated: String
-        get() = getCurrentTimeAndDate().second
+    @Ignore
+    private val currentDateTime: LocalDateTime = LocalDateTime.now()
 
+    @ColumnInfo(name = "time_created")
+    var timeCreated: String = currentDateTime.format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT))
 
-    private fun getCurrentTimeAndDate(): Pair<String,String>{
-        val currentDateTime: LocalDateTime = LocalDateTime.now()
-        val timeCreated: String = currentDateTime.format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT))
-        val dateCreated: String = currentDateTime.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM))
-        return Pair(timeCreated,dateCreated)
-    }*/
+    @ColumnInfo(name = "date_created")
+    var dateCreated: String = currentDateTime.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM))
+
 
     companion object{
         const val NOTES = 1
@@ -43,14 +45,12 @@ data class Notes(@ColumnInfo(name = "note_title") var noteTitle:String,
     }
 }
 
-data class Label(val labelId:Int,var labelName:String)
-
 
 class LabelTypeConverter {
 
     @TypeConverter
-    fun listToJson(value: Set<Label>?): String = Gson().toJson(value)
+    fun listToJson(value: MutableSet<String>?): String = Gson().toJson(value)
 
     @TypeConverter
-    fun jsonToList(value: String) = Gson().fromJson(value, Array<Label>::class.java).toSet()
+    fun jsonToList(value: String) = Gson().fromJson(value, Array<String>::class.java).toMutableSet()
 }

@@ -2,6 +2,7 @@ package com.example.demonotedatabase
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Button
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -15,18 +16,26 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         val mUserViewModel = ViewModelProvider(this).get(NoteViewModel::class.java)
-        mUserViewModel.deleteAllUsers()
-        var list: List<Notes>? = mUserViewModel.readAllData.value
-        val label = Label(1,"nooo")
-        val note = Notes("chera","nothing", NOTES, setOf(label,label))
-        mUserViewModel.addUser(note)
+        mUserViewModel.deleteAllNotes()
+        var list: List<Notes>? = mUserViewModel.allNotes.value
+        val note = Notes("chera","nothing", NOTES)
+        mUserViewModel.addNote(note)
         note.noteDetails = "something"
-        mUserViewModel.updateUser(note)
-        val note2 = Notes("dev","xxx",NOTES, setOf(label))
+        mUserViewModel.updateNote(note)
+        mUserViewModel.addLabel("nooo")
+        val note2 = Notes("dev","xxx",NOTES)
         note2.pinned = PINNED
-        mUserViewModel.addUser(note2)
-        val note3 = Notes("cherry","mmm", NOTES, setOf(label))
+        mUserViewModel.addNote(note2)
+        val note3 = Notes("cherry","mmm", NOTES)
+        //don't use below too
+        note3.addLabel("yess")
         note3.pinned = PINNED
+        mUserViewModel.addNote(note3)
+        //***don't use this
+        //label.addNote(note3)
+        //label.addNote(note)
+
+
         //note3.labels.add(label)
         //not working
         /*list?.get(0).let {
@@ -38,13 +47,41 @@ class MainActivity : AppCompatActivity() {
         mUserViewModel.delete(note2)*/
 
         val adapter2 = NoteAdapter()
-        mUserViewModel.readAllData.observe(this, {
+        mUserViewModel.allNotes.observe(this, {
             list = it
             adapter2.setNotes(it)
         })
         val notesRecyclerView2 = findViewById<RecyclerView>(R.id.notes_recycler_view2)
         notesRecyclerView2.adapter = adapter2
         notesRecyclerView2.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+
+
+        var labelList = mUserViewModel.allLabels.value
+        mUserViewModel.addLabel("no")
+        val labelAdapter = LabelAdapter()
+        mUserViewModel.allLabels.observe(this, {
+            labelList = it
+            labelAdapter.setNotes(it)
+        })
+        val labelRecyclerView = findViewById<RecyclerView>(R.id.notes_recycler_view_label)
+        labelRecyclerView.adapter = labelAdapter
+        labelRecyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+
+
+        mUserViewModel.addLabel("no")
+        findViewById<Button>(R.id.button).setOnClickListener {
+            mUserViewModel.addLabelWithNote(list!![0], labelList!![0])
+        }
+
+        findViewById<Button>(R.id.button2).setOnClickListener {
+            val notes = list!![0]
+            notes.noteDetails = "extra"
+            mUserViewModel.updateNote(notes)
+            val notesOfLabel = mUserViewModel.getNotesOfNoteIds(labelList!![0].getNotesId())
+            Toast.makeText(this, notesOfLabel.toString(),Toast.LENGTH_LONG).show()
+            //val noteById = mUserViewModel.getNotesOfNoteIds(setOf<Long>(list!![0].noteId,list!![1].noteId))
+            //Toast.makeText(this, noteById.value?.size.toString(),Toast.LENGTH_LONG).show()
+        }
 
     }
 }
