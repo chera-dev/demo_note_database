@@ -67,7 +67,7 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
     fun addLabelWithNote(note: Notes,label: Label){
         note.addLabel(label.labelName)
         updateNote(note)
-        label.addNote(note)
+        label.addNote(note.noteId)
         updateLabel(label)
     }
 

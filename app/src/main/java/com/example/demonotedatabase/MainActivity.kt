@@ -71,13 +71,14 @@ class MainActivity : AppCompatActivity() {
         mUserViewModel.addLabel("no")
         findViewById<Button>(R.id.button).setOnClickListener {
             mUserViewModel.addLabelWithNote(list!![0], labelList!![0])
+            mUserViewModel.addLabelWithNote(list!![1], labelList!![0])
         }
 
         findViewById<Button>(R.id.button2).setOnClickListener {
             val notes = list!![0]
             notes.noteDetails = "extra"
             mUserViewModel.updateNote(notes)
-            val notesOfLabel = mUserViewModel.getNotesOfNoteIds(labelList!![0].getNotesId())
+            val notesOfLabel = mUserViewModel.getNotesOfNoteIds(labelList!![0].getNotes())
             Toast.makeText(this, notesOfLabel.toString(),Toast.LENGTH_LONG).show()
             //val noteById = mUserViewModel.getNotesOfNoteIds(setOf<Long>(list!![0].noteId,list!![1].noteId))
             //Toast.makeText(this, noteById.value?.size.toString(),Toast.LENGTH_LONG).show()
